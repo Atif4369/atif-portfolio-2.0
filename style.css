@@ -1,0 +1,1253 @@
+/* =========================================
+   CORE VARIABLES & RESET
+   ========================================= */
+:root {
+    --bg: #050505;
+    --text: #ffffff;
+    --text-muted: #a0a0a0;
+    --accent: #ffffff;
+    --glass: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --nav-bg: rgba(5, 5, 5, 0.8);
+    --overlay-bg: rgba(5, 5, 5, 0.98);
+    --transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Remove any 'body.light-mode' code you have in your CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-main);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* =========================================
+   ANIMATED BACKGROUND
+   ========================================= */
+.bg-glow {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% -20%, #1a1a1a 0%, #050505 80%);
+    z-index: -2;
+}
+
+.noise-overlay {
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* =========================================
+   PRELOADER
+   ========================================= */
+.loader {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    transition: opacity 0.8s ease;
+}
+
+.loader-text {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    letter-spacing: 5px;
+    font-size: 1.2rem;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.loader-bar {
+    width: 150px;
+    height: 2px;
+    background: var(--glass-border);
+    position: relative;
+    overflow: hidden;
+}
+
+.loader-bar::after {
+    content: '';
+    position: absolute;
+    width: 40%;
+    height: 100%;
+    background: var(--accent);
+    animation: loading 1.5s infinite ease-in-out;
+}
+
+@keyframes loading {
+    0% { left: -40%; }
+    100% { left: 100%; }
+}
+
+/* =========================================
+   REUSABLE COMPONENTS
+   ========================================= */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 5%;
+}
+
+.glass {
+    background: var(--glass);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+}
+
+.section { padding: 120px 0; }
+
+.section-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.section-subtitle {
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 10px;
+}
+
+.section-title {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 600;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 32px;
+    border-radius: 8px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: var(--transition);
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: #000;
+    border: 1px solid var(--accent);
+}
+
+.btn-primary:hover {
+    background: transparent;
+    color: var(--accent);
+    box-shadow: 0 0 20px rgba(255,255,255,0.2);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--glass-border);
+}
+
+.btn-outline:hover {
+    border-color: var(--accent);
+    background: var(--glass);
+}
+
+/* =========================================
+   NAVBAR
+   ========================================= */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 25px 0;
+    z-index: 1000;
+    transition: var(--transition);
+}
+
+.navbar.scrolled {
+    padding: 15px 0;
+    background: rgba(5, 5, 5, 0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.nav-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+/* =========================================
+   NAVBAR SCROLL EFFECT (ADD THIS HERE)
+   ========================================= */
+
+/* When the user scrolls, JS adds the .scrolled class to the navbar */
+.navbar.scrolled {
+    top: 0; /* Moves the floating bar to the very top */
+    padding: 0;
+}
+
+.navbar.scrolled .nav-container {
+    max-width: 100%; /* Makes the capsule full-width */
+    border-radius: 0; /* Removes rounded corners */
+    background: var(--nav-bg); /* Uses the theme variable (White in light, Black in dark) */
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-bottom: 1px solid var(--glass-border);
+    padding: 12px 5%; /* Adjusted padding for full-width look */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+/* Ensure logo and links stay visible and transition smoothly */
+.navbar.scrolled .logo, 
+.navbar.scrolled .nav-links a {
+    transition: var(--transition);
+}
+
+.logo {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.2rem; /* Reduced slightly from 1.4rem to accommodate more text */
+    text-decoration: none;
+    color: var(--text);
+    letter-spacing: -0.5px;
+    white-space: nowrap; /* Prevents the name from breaking into two lines */
+    transition: var(--transition);
+}
+
+.logo:hover {
+    opacity: 0.8;
+}
+
+/* Mobile Fix for longer logo text */
+@media (max-width: 480px) {
+    .logo {
+        font-size: 1.1rem; /* Even smaller on tiny phones so it doesn't hit the hamburger menu */
+    }
+}
+
+/* =========================
+   NAVBAR HOVER GLASS EFFECT
+   ========================= */
+.nav-links {
+    display: flex;
+    gap: 15px; /* Slightly reduced gap to accommodate the pill padding */
+    list-style: none;
+    align-items: center;
+}
+
+.nav-links li {
+    position: relative;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 8px 16px; /* Space for the glass background */
+    display: block;
+    transition: all 0.4s ease;
+    border-radius: 20px;
+    z-index: 1;
+}
+
+/* The Glass Animation Background */
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    inset: 0; /* Fills the whole link area */
+    background: rgba(255, 255, 255, 0.07); /* Very soft glass */
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(4px);
+    border-radius: 20px;
+    opacity: 0; /* Hidden by default */
+    transform: scale(0.8) translateY(5px); /* Start smaller and slightly lower */
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    z-index: -1; /* Sits behind the text */
+}
+
+/* Hover State */
+.nav-links a:hover {
+    color: #ffffff; /* Text turns pure white */
+}
+
+.nav-links a:hover::after {
+    opacity: 1;
+    transform: scale(1) translateY(0); /* Pops into place */
+}
+
+/* Active State (When clicking/navigating) */
+.nav-links a:active {
+    transform: scale(0.95); /* Subtle click feedback */
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive fix for the new padding */
+@media (max-width: 992px) {
+    .nav-links {
+        gap: 5px;
+    }
+    .nav-links a {
+        padding: 8px 12px;
+    }
+}
+
+/* =========================================
+   NAVBAR LINK GLASS ZOOM ANIMATION
+   ========================================= */
+.nav-links li {
+    list-style: none;
+    display: inline-block;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 10px 22px;
+    border-radius: 50px; /* Makes the glass effect a pill shape */
+    display: block;
+    position: relative;
+    /* This cubic-bezier makes the zoom feel "springy" and high-end */
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: 1px solid transparent;
+}
+
+/* THE ZOOM & GLASS HOVER STATE */
+.nav-links a:hover {
+    color: #ffffff;
+    transform: scale(1.15); /* Zoom effect */
+    background: rgba(255, 255, 255, 0.08); /* Transparent white */
+    backdrop-filter: blur(12px) saturate(150%); /* Glass blur */
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Thin glass border */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* Subtle depth shadow */
+}
+
+/* Subtle dot indicator that appears under the link on hover */
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: #ffffff;
+    border-radius: 50%;
+    transform: translateX(-50%);
+    transition: all 0.3s ease;
+    opacity: 0;
+}
+
+.nav-links a:hover::after {
+    width: 4px;
+    height: 4px;
+    opacity: 1;
+    bottom: 6px;
+}
+
+.nav-links a:hover { color: var(--accent); }
+
+.nav-cta .btn-sm {
+    padding: 8px 20px;
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--accent);
+    font-size: 0.85rem;
+    transition: var(--transition);
+}
+
+.nav-cta .btn-sm:hover {
+    background: var(--accent);
+    color: #000;
+}
+
+/* =========================================
+   HERO SECTION
+   ========================================= */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding-top: 100px;
+}
+
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.badge {
+    display: inline-block;
+    padding: 6px 16px;
+    background: var(--glass-heavy);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    margin-bottom: 25px;
+    color: var(--text-muted);
+}
+
+.name-reveal {
+    font-family: var(--font-heading);
+    font-size: clamp(3.5rem, 8vw, 5.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    display: block;
+    margin-bottom: 15px;
+}
+
+.text-gradient {
+    color: var(--text-muted);
+    font-weight: 300;
+}
+
+.hero-content h2 {
+    font-size: 1.5rem;
+    margin-bottom: 25px;
+    font-weight: 400;
+}
+
+.hero-content p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    max-width: 500px;
+    margin-bottom: 40px;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.hero-socials {
+    display: flex;
+    gap: 25px;
+}
+
+.hero-socials a {
+    color: var(--text-muted);
+    font-size: 1.3rem;
+    transition: var(--transition);
+}
+
+.hero-socials a:hover {
+    color: var(--accent);
+    transform: translateY(-3px);
+}
+
+/* Hero Image & Floating Cards */
+.hero-image-container {
+    position: relative;
+}
+
+.glass-frame {
+    width: 100%;
+    aspect-ratio: 1/1.2;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    overflow: hidden;
+    padding: 15px;
+}
+
+.profile-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    filter: grayscale(100%) contrast(1.1);
+    transition: var(--transition);
+}
+
+.profile-img:hover {
+    filter: grayscale(0%);
+}
+
+.floating-card {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    padding: 15px 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: float 6s infinite ease-in-out;
+}
+
+.excel-card { top: 10%; left: -20%; }
+.analysis-card { bottom: 15%; right: -10%; animation-delay: 2s; }
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+/* =========================================
+   ABOUT & SKILLS
+   ========================================= */
+.about-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 30px;
+}
+
+.about-text { padding: 40px; }
+.about-text h3 { margin-bottom: 20px; font-family: var(--font-heading); }
+.about-text p { margin-bottom: 20px; color: var(--text-muted); }
+
+.edu-item {
+    display: flex;
+    gap: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--glass-border);
+}
+
+.year { color: var(--accent); font-weight: 600; font-size: 0.9rem; }
+
+.about-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.stat-card {
+    padding: 30px;
+    text-align: center;
+    flex: 1;
+}
+
+.stat-num {
+    display: block;
+    font-size: 2.5rem;
+    font-family: var(--font-heading);
+    font-weight: 700;
+}
+
+.stat-label { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+
+/* Skills */
+.skills-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+.skill-item { padding: 25px; }
+
+.skill-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+.skill-bar {
+    height: 4px;
+    background: var(--glass-heavy);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.skill-progress {
+    height: 100%;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.skill-item.visible .skill-progress { transform: scaleX(1); }
+
+/* =========================================
+   PROJECTS
+   ========================================= */
+.projects-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.project-card {
+    padding: 40px;
+    transition: var(--transition);
+}
+
+.project-card:hover {
+    background: var(--glass-heavy);
+    transform: translateY(-10px);
+}
+
+.project-tag {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 15px;
+}
+
+.project-card h3 {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+}
+
+.project-features {
+    list-style: none;
+    margin: 25px 0;
+}
+
+.project-features li {
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    display: flex;
+    gap: 12px;
+}
+
+.project-features i { color: var(--accent); font-size: 0.8rem; margin-top: 5px;}
+
+.project-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.project-tools span {
+    font-size: 0.75rem;
+    padding: 5px 12px;
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    color: var(--text-muted);
+}
+
+/* =========================================
+   TOOLS SECTION
+   ========================================= */
+.tools-wrap {
+    display: flex;
+    justify-content: space-around;
+    padding: 50px;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.tool-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-muted);
+    transition: var(--transition);
+}
+
+.tool-icon i { font-size: 2.5rem; }
+.tool-icon span { font-size: 0.8rem; font-weight: 500; }
+.tool-icon:hover { color: var(--accent); transform: scale(1.1); }
+
+/* =========================================
+   CONTACT
+   ========================================= */
+.contact-grid {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: 80px;
+}
+
+.contact-methods {
+    margin-top: 40px;
+}
+
+.method-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.method-item i {
+    width: 50px;
+    height: 50px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--accent);
+}
+
+.contact-form-container { padding: 50px; }
+
+.form-group { margin-bottom: 25px; }
+
+.contact-form input, 
+.contact-form textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--glass-border);
+    padding: 15px 0;
+    color: var(--text);
+    font-family: var(--font-main);
+    transition: var(--transition);
+}
+
+.contact-form input:focus, 
+.contact-form textarea:focus {
+    outline: none;
+    border-bottom-color: var(--accent);
+}
+
+.form-status {
+    margin-top: 20px;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* =========================================
+   FOOTER
+   ========================================= */
+.footer {
+    padding: 60px 0;
+    border-top: 1px solid var(--glass-border);
+}
+
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.footer-links {
+    display: flex;
+    gap: 30px;
+}
+
+.footer-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.footer-links a:hover { color: var(--accent); }
+
+/* =========================================
+   ANIMATIONS
+   ========================================= */
+.reveal { opacity: 0; transform: translateY(30px); }
+.reveal-delayed { opacity: 0; transform: translateY(30px); transition-delay: 0.3s; }
+.card-reveal { opacity: 0; transform: translateY(50px); }
+
+.visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 1.2s ease, transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* =========================================
+   RESPONSIVE DESIGN
+   ========================================= */
+@media (max-width: 992px) {
+    .hero-grid { grid-template-columns: 1fr; text-align: center; }
+    .hero-content p { margin: 0 auto 40px; }
+    .hero-actions { justify-content: center; }
+    .hero-socials { justify-content: center; }
+    .hero-image-container { max-width: 400px; margin: 0 auto; }
+    .about-grid, .skills-grid, .projects-container, .contact-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+}
+
+/* =========================================
+   MOBILE OPTIMIZATION & RESPONSIVENESS
+   ========================================= */
+
+/* Performance Fix: Prevent lag on glass filters for mobile */
+@media (max-width: 768px) {
+    .glass {
+        backdrop-filter: blur(8px); /* Reduced blur for performance */
+        -webkit-backdrop-filter: blur(8px);
+    }
+    
+    .section { padding: 60px 0; } /* Smaller vertical spacing */
+}
+
+/* 1. Mobile Navbar & Hamburger */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    cursor: pointer;
+    z-index: 2000;
+}
+
+.bar {
+    width: 25px;
+    height: 2px;
+    background: #fff;
+    transition: 0.3s;
+}
+
+.mobile-overlay {
+    position: fixed;
+    top: 0;
+    right: -100%; /* Hidden by default */
+    width: 100%;
+    height: 100vh;
+    z-index: 1500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mobile-overlay.active { right: 0; }
+
+.mobile-nav-links {
+    list-style: none;
+    text-align: center;
+}
+
+.mobile-nav-links li { margin: 25px 0; }
+
+.mobile-nav-links a {
+    font-size: 2rem;
+    color: #ffffff; /* Make sure this is hardcoded to #ffffff now */
+    text-decoration: none;
+    font-family: var(--font-heading);
+    font-weight: 600;
+}
+
+.mobile-overlay {
+    background: rgba(5, 5, 5, 0.98); /* Ensure background is dark */
+    backdrop-filter: blur(20px);
+    /* ... rest of style ... */
+}
+
+/* 2. Responsive Grid Layouts */
+@media (max-width: 992px) {
+    .menu-toggle { display: flex; }
+    .nav-links { display: none; }
+
+    /* Hero Stacking */
+    .hero-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding-top: 40px;
+    }
+
+    .hero-content h1 { font-size: 3rem; }
+    
+    .hero-image-container {
+        order: -1; /* Image moves to top */
+        max-width: 280px;
+        margin: 0 auto 30px;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .excel-card { left: -10%; top: 0; }
+    .analysis-card { right: -10%; bottom: 0; }
+
+    /* Grids to single column */
+    .about-grid, .skills-grid, .projects-container, .contact-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px;
+    }
+
+    .contact-info { text-align: center; }
+    .contact-form-container { padding: 30px 20px; }
+}
+
+/* 3. Small Phone Specifics */
+@media (max-width: 480px) {
+    .section-title { font-size: 1.8rem; }
+    .hero-content h1 { font-size: 2.5rem; }
+    .stat-card { padding: 20px; }
+    .nav-container { width: 92%; padding: 10px 20px; }
+}
+
+/* Animation for Hamburger to X */
+.menu-toggle.active .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+.menu-toggle.active .bar:nth-child(2) { opacity: 0; }
+.menu-toggle.active .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+
+/* =========================================
+   FIXED MOBILE MENU & BUTTON
+   ========================================= */
+.mobile-overlay {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 100%;
+    height: 100vh;
+    /* Changed from hardcoded black to variable */
+    background: var(--overlay-bg); 
+    backdrop-filter: blur(20px);
+    z-index: 1500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Fix Mobile Links Text Color */
+.mobile-nav-links a {
+    font-size: 2rem;
+    color: var(--text); /* Changed from #ffffff to variable */
+    text-decoration: none;
+    font-family: var(--font-heading);
+    font-weight: 600;
+}
+
+.mobile-overlay.active {
+    right: 0;
+}
+
+.mobile-menu-content {
+    text-align: center;
+    width: 100%;
+}
+
+.mobile-nav-links {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 40px;
+}
+
+.mobile-nav-links li {
+    margin: 20px 0;
+}
+
+/* Style for text links only */
+.mobile-nav-links a {
+    font-size: 2rem; /* Big, clear links */
+    color: #ffffff;
+    text-decoration: none;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+/* =========================================
+   MOBILE MENU CANCEL BUTTON
+   ========================================= */
+.close-menu {
+    position: absolute;
+    top: 40px;
+    right: 30px;
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1600;
+    opacity: 0.8;
+    transition: 0.3s;
+}
+
+.close-menu:hover {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.close-menu i {
+    font-size: 1.3rem;
+}
+/* THE FIX: Hire Me Button specifically for Mobile Menu */
+.m-hire-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: #ffffff !important; /* Forces background to be white */
+    color: #000000 !important;      /* Forces text to be black */
+    padding: 16px 32px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-decoration: none;
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+    box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1);
+}
+
+.m-hire-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: #ffffff; /* White background for button */
+    color: #000000 !important; /* Black text */
+    padding: 16px 32px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-decoration: none;
+    width: 100%; /* Full width on mobile for easy tapping */
+    max-width: 280px;
+    margin: 0 auto;
+    box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1);
+}
+
+.m-hire-btn i {
+    font-size: 0.9rem;
+}
+
+/* Hamburger Fix for visibility */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 2000;
+    padding: 10px;
+}
+
+@media (max-width: 992px) {
+    .menu-toggle { display: flex; }
+}
+
+.bar {
+    width: 28px;
+    height: 2px;
+    background: #ffffff;
+    border-radius: 2px;
+}
+
+/* =========================================
+   RESUME BUTTON (BESIDE NAV)
+   ========================================= */
+.nav-right-side {
+    display: flex;
+    align-items: center;
+    gap: 30px; /* Space between links and Resume button */
+}
+
+.resume-btn {
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 8px 18px;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.resume-btn i {
+    margin-left: 5px;
+    font-size: 0.75rem;
+}
+
+.resume-btn:hover {
+    background: #ffffff;
+    color: #000000;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive fix for smaller laptops */
+@media (max-width: 1100px) {
+    .nav-right-side { gap: 15px; }
+    .nav-links { gap: 20px; }
+}
+
+/* Hide Resume button in desktop nav when mobile menu appears */
+@media (max-width: 992px) {
+    .resume-btn {
+        display: none; /* It is already inside the mobile overlay list */
+    }
+}
+
+/* =========================================
+   LIVE TOOLBOX STYLING
+   ========================================= */
+.tools-functional-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 30px;
+    margin-top: 50px;
+}
+
+.tool-card {
+    padding: 40px 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.tool-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.03), transparent);
+    transform: translateX(-100%);
+    transition: 0.6s;
+}
+
+.tool-card:hover::before {
+    transform: translateX(100%);
+}
+
+.tool-card:hover {
+    transform: translateY(-15px) scale(1.02);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+}
+
+.tool-icon-box i {
+    font-size: 3.5rem;
+    margin-bottom: 25px;
+    display: inline-block;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+}
+
+.tool-card h3 {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.tool-card p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+.launch-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #fff;
+    opacity: 0.5;
+    transition: 0.3s;
+}
+
+.tool-card:hover .launch-label {
+    opacity: 1;
+    color: var(--accent);
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .tools-functional-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+    .tool-card { padding: 30px 15px; }
+    .tool-icon-box i { font-size: 2.5rem; }
+}
+
+/* =========================================
+   THEME TOGGLE BUTTON STYLING
+   ========================================= */
+.theme-btn {
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: var(--transition);
+    font-size: 1rem;
+}
+
+.theme-btn:hover {
+    background: var(--glass);
+    transform: rotate(15deg) scale(1.1);
+}
+
+/* Light Mode specific fixes */
+body.light-mode .bg-glow {
+    background: radial-gradient(circle at 50% -20%, #f0f0f0 0%, #ffffff 80%);
+}
+
+body.light-mode .btn-primary {
+    background: #000000;
+    color: #ffffff;
+}
+
+body.light-mode .m-hire-btn {
+    background: #000000;
+    color: #ffffff !important;
+}
+
+body.light-mode .bar {
+    background: #000000;
+}
+
+body.light-mode .mobile-overlay {
+    background: rgba(255, 255, 255, 0.98);
+}
+
+/* MOBILE VIEW POSITIONING */
+@media (max-width: 992px) {
+    .nav-right-side {
+        flex-direction: row-reverse; /* Flips the order on mobile */
+        gap: 15px;
+    }
+    
+    /* On mobile, toggle button stays left of hamburger */
+    #theme-toggle {
+        order: 2; 
+    }
+    .menu-toggle {
+        order: 1;
+    }
+}
