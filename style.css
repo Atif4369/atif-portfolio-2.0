@@ -1252,3 +1252,32 @@ body.light-mode .mobile-overlay {
         order: 1;
     }
 }
+
+@media (max-width: 992px) {
+    /* ... existing mobile code ... */
+
+    .contact-info {
+        text-align: center; /* Centers the heading and the paragraph */
+        margin-bottom: 40px;
+    }
+
+    .contact-info .section-title {
+        text-align: center; /* Ensures the title specifically is centered */
+        margin-bottom: 20px;
+    }
+
+    .contact-info p {
+        margin: 0 auto 30px; /* Centers the paragraph text block */
+    }
+
+    .contact-methods {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Centers the email/phone/social items */
+        text-align: center;
+    }
+
+    .method-item {
+        justify-content: center; /* Centers icons and text within the item */
+    }
+}
