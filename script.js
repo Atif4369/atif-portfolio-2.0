@@ -1,213 +1,205 @@
-/**
- * ATIF ARHAM - Portfolio Interaction Logic
- * Senior Frontend Approach: Vanilla JS
- */
-
-document.addEventListener('DOMContentLoaded', () => {
+// ==========================================
+// 0. Premium Preloader Logic
+// ==========================================
+window.addEventListener('load', () => {
+    const preloader = document.getElementById('preloader');
     
-    // 1. PRELOADER
-    const loader = document.getElementById('loader');
-    window.addEventListener('load', () => {
+    // We add a slight 1.5-second delay so the beautiful animation 
+    // has time to play out even if the website loads instantly!
+    setTimeout(() => {
+        preloader.classList.add('hidden');
+        
+        // Completely remove it from the code after fading out to keep the site fast
         setTimeout(() => {
-            loader.style.opacity = '0';
-            setTimeout(() => loader.style.display = 'none', 800);
-            startHeroAnimations();
-        }, 1200);
-    });
+            preloader.style.display = 'none';
+        }, 800); 
+    }, 1500);
+});
+document.addEventListener("DOMContentLoaded", () => {
+    
+    // ==========================================
+    // 1. Mobile Menu Toggle Logic (With Cancel Option)
+    // ==========================================
+    const menuOpenBtn = document.getElementById('menu-open');
+    const menuCloseBtn = document.getElementById('menu-close');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileLinks = document.querySelectorAll('.mobile-nav-item');
 
-    // 2. NAVBAR SCROLL EFFECT
-    const navbar = document.getElementById('navbar');
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
-    });
-
-    // 3. SCROLL REVEAL ENGINE (Intersection Observer)
-    const revealOptions = {
-        threshold: 0.15,
-        rootMargin: "0px 0px -50px 0px"
-    };
-
-    const revealObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                // If it's a skill bar, trigger the width animation
-                if (entry.target.classList.contains('skill-item')) {
-                    entry.target.classList.add('animate-bar');
-                }
-            }
-        });
-    }, revealOptions);
-
-    document.querySelectorAll('.reveal, .reveal-delayed, .card-reveal, .skill-item, .project-card').forEach(el => {
-        revealObserver.observe(el);
-    });
-
-    // 4. HERO ANIMATION START
-    function startHeroAnimations() {
-        document.querySelectorAll('#home .reveal, #home .reveal-delayed').forEach(el => {
-            el.classList.add('visible');
-        });
+    function openMenu() {
+        mobileMenu.classList.add('open');
+        document.body.style.overflow = 'hidden'; // Stop background scrolling
     }
 
-    // 5. // UPDATED MOBILE MENU LOGIC WITH CANCEL BUTTON
-const menuBtn = document.getElementById('mobile-menu-btn'); // Hamburger
-const closeBtn = document.getElementById('close-menu-btn'); // New Cancel Button
-const overlay = document.getElementById('mobile-overlay');
-const overlayLinks = document.querySelectorAll('.mobile-nav-links a, .m-hire-btn');
+    function closeMenu() {
+        mobileMenu.classList.remove('open');
+        document.body.style.overflow = ''; // Restore scrolling
+    }
 
-function openMenu() {
-    menuBtn.classList.add('active');
-    overlay.classList.add('active');
-    document.body.style.overflow = 'hidden'; // Stop background scrolling
-}
+    menuOpenBtn.addEventListener('click', openMenu);
+    menuCloseBtn.addEventListener('click', closeMenu);
 
-function closeMenu() {
-    menuBtn.classList.remove('active');
-    overlay.classList.remove('active');
-    document.body.style.overflow = 'initial'; // Restore scrolling
-}
+    // Close menu automatically when a link is clicked
+    mobileLinks.forEach(link => {
+        link.addEventListener('click', closeMenu);
+    });
 
-// Event Listeners
-menuBtn.addEventListener('click', openMenu);
-closeBtn.addEventListener('click', closeMenu);
 
-// Close menu if any link is clicked
-overlayLinks.forEach(link => {
-    link.addEventListener('click', closeMenu);
-});
-    // 6. FORM HANDLING (Formspree)
+    // ==========================================
+    // 2. Scroll Reveal & Skill Progress Animation
+    // ==========================================
+    const revealElements = document.querySelectorAll('.reveal');
+    const progressBars = document.querySelectorAll('.progress-bar');
+
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Add show class for fade/slide in
+                entry.target.classList.add('show');
+                
+                // If it's a skill card, animate the progress bar
+                if (entry.target.classList.contains('skill-card')) {
+                    const bar = entry.target.querySelector('.progress-bar');
+                    if (bar) {
+                        bar.style.width = bar.getAttribute('data-width');
+                    }
+                }
+                
+                // Unobserve to optimize performance (run once)
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.15,
+        rootMargin: "0px 0px -50px 0px" // Triggers slightly before bottom
+    });
+
+    revealElements.forEach(el => revealObserver.observe(el));
+
+
+    // ==========================================
+    // 3. Scroll Spy (Auto-marking Navbar Links)
+    // ==========================================
+    const sections = document.querySelectorAll('.section');
+    const navItemsDesktop = document.querySelectorAll('.nav-item');
+    const navItemsMobile = document.querySelectorAll('.mobile-nav-item');
+
+    window.addEventListener('scroll', () => {
+        let currentSectionId = '';
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+            
+            // Activate when section is around 1/3 down the screen
+            if (pageYOffset >= (sectionTop - sectionHeight / 3)) {
+                currentSectionId = section.getAttribute('id');
+            }
+        });
+
+        // Update Desktop Navigation
+        navItemsDesktop.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${currentSectionId}`) {
+                link.classList.add('active');
+            }
+        });
+
+        // Update Mobile Navigation
+        navItemsMobile.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${currentSectionId}`) {
+                link.classList.add('active');
+            }
+        });
+    });
+
+
+    // ==========================================
+    // 4. Tools Click Logic (Requested Switch Case)
+    // ==========================================
+    const toolBtns = document.querySelectorAll('.tool-btn');
+    
+    toolBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const toolName = btn.getAttribute('data-tool');
+            let url = "";
+
+            // Using the exact logic requested by user
+            switch(toolName) {
+                case 'excel':
+                    url = "https://www.microsoft365.com/launch/excel";
+                    break;
+                case 'sheets':
+                    url = "https://docs.google.com/spreadsheets/u/0/"; 
+                    break;
+                case 'ppt':
+                    url = "https://www.microsoft365.com/launch/powerpoint";
+                    break;
+                case 'word':
+                    url = "https://www.microsoft365.com/launch/word";
+                    break;
+                default:
+                    return;
+            }
+
+            if (url !== "") {
+                window.open(url, "_blank"); // Opens securely in a new tab
+            }
+        });
+    });
+    // ==========================================
+    // 5. Contact Form AJAX Submission (No Reload)
+    // ==========================================
     const contactForm = document.getElementById('contactForm');
-    const formStatus = document.getElementById('formStatus');
+    const formStatus = document.getElementById('form-status');
+    const submitBtn = document.getElementById('submitBtn');
 
     if (contactForm) {
-        contactForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        contactForm.addEventListener('submit', async function(e) {
+            e.preventDefault(); // Stop the page from redirecting
+
+            // Change button text to show it's working
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.innerHTML = 'Sending...';
+            submitBtn.disabled = true;
+
+            // Gather the form data
             const data = new FormData(contactForm);
-            
-            formStatus.innerHTML = "Sending...";
-            formStatus.style.color = "var(--text-muted)";
 
             try {
+                // Send the data to Formspree silently
                 const response = await fetch(contactForm.action, {
                     method: 'POST',
                     body: data,
-                    headers: { 'Accept': 'application/json' }
+                    headers: {
+                        'Accept': 'application/json'
+                    }
                 });
 
                 if (response.ok) {
-                    formStatus.innerHTML = "✔ Message sent successfully. I'll get back to you soon!";
-                    formStatus.style.color = "#4BB543";
-                    contactForm.reset();
+                    // Success! Show Green Message
+                    formStatus.innerHTML = '<i class="ri-checkbox-circle-line"></i> Message sent successfully';
+                    formStatus.className = 'form-status status-success show';
+                    contactForm.reset(); // Clear the form fields
                 } else {
-                    formStatus.innerHTML = "❌ Oops! There was a problem. Please try again.";
-                    formStatus.style.color = "#ff3333";
+                    // Formspree blocked it / Error
+                    formStatus.innerHTML = '<i class="ri-error-warning-line"></i> Message sent failed';
+                    formStatus.className = 'form-status status-error show';
                 }
             } catch (error) {
-                formStatus.innerHTML = "❌ Connection error. Please check your internet.";
-                formStatus.style.color = "#ff3333";
+                // Network Error (No internet)
+                formStatus.innerHTML = '<i class="ri-wifi-off-line"></i> Message sent failed';
+                formStatus.className = 'form-status status-error show';
             }
-        });
-    }
 
-    // 7. SMOOTH BUTTON RIPPLE EFFECT
-    const buttons = document.querySelectorAll('.btn');
-    buttons.forEach(btn => {
-        btn.addEventListener('mousedown', function(e) {
-            const rect = this.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            const ripple = document.createElement('span');
-            ripple.style.position = 'absolute';
-            ripple.style.left = `${x}px`;
-            ripple.style.top = `${y}px`;
-            ripple.style.width = '0';
-            ripple.style.height = '0';
-            ripple.style.background = 'rgba(255,255,255,0.2)';
-            ripple.style.borderRadius = '50%';
-            ripple.style.transform = 'translate(-50%, -50%)';
-            ripple.style.transition = 'width 0.5s ease-out, height 0.5s ease-out';
-            
-            this.style.position = 'relative';
-            this.style.overflow = 'hidden';
-            this.appendChild(ripple);
-            
+            // Restore the button back to normal
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+
+            // Automatically hide the message after 5 seconds
             setTimeout(() => {
-                ripple.style.width = '300px';
-                ripple.style.height = '300px';
-            }, 10);
-            
-            this.addEventListener('mouseup', () => {
-                ripple.style.opacity = '0';
-                setTimeout(() => ripple.remove(), 500);
-            });
+                formStatus.classList.remove('show');
+            }, 5000);
         });
-    });
-});
-
-// Add this inside your DOMContentLoaded listener
-window.addEventListener('scroll', () => {
-    const navbar = document.getElementById('navbar');
-    if (window.scrollY > 50) {
-        navbar.classList.add('scrolled');
-    } else {
-        navbar.classList.remove('scrolled');
     }
-    // ============================================================
-    // SCROLL DETECTION LOGIC
-    // ============================================================
-    window.addEventListener('scroll', () => {
-        const navbar = document.getElementById('navbar');
-        // If user scrolls down more than 50px, add the class
-        if (window.scrollY > 50) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
-    });
-       
 });
-
-// MAGNETIC NAV LINKS: Follows the mouse slightly for a premium feel
-document.querySelectorAll('.nav-links a').forEach(link => {
-    link.addEventListener('mousemove', (e) => {
-        const { left, top, width, height } = link.getBoundingClientRect();
-        const x = (e.clientX - left - width / 2) * 0.3; // Sensitivity
-        const y = (e.clientY - top - height / 2) * 0.3;
-        link.style.transform = `scale(1.15) translate(${x}px, ${y}px)`;
-    });
-
-    link.addEventListener('mouseleave', () => {
-        link.style.transform = ''; // Snaps back to original scale/position
-    });
-});
-
-// FUNCTION TO LAUNCH ANALYTICS TOOLS
-function launchTool(toolName) {
-    let url = "";
-
-    switch(toolName) {
-        case 'excel':
-            url = "https://www.microsoft365.com/launch/excel";
-            break;
-        case 'sheets':
-            url = "https://docs.google.com/spreadsheets/u/0/"; 
-            break;
-        case 'ppt':
-            url = "https://www.microsoft365.com/launch/powerpoint";
-            break;
-        case 'word':
-            url = "https://www.microsoft365.com/launch/word";
-            break;
-        default:
-            return;
-    }
-
-    // This simulates "opening" the app by launching the professional web version
-    window.open(url, '_blank');
-}
