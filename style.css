@@ -474,14 +474,14 @@ h1, h2, h3 { font-family: var(--font-heading); font-weight: 500; line-height: 1.
 .delay-4 { transition-delay: 0.4s; }
 
 /* =========================================
-   MOBILE RESPONSIVENESS & ALIGNMENT FIXES 
+   MOBILE RESPONSIVENESS & ANTI-LAG OPTIMIZATION
 ========================================= */
 @media (max-width: 1024px) {
     .container { max-width: 100%; padding: 0 5%; }
     .hero-grid { display: flex; flex-direction: column; gap: 40px; }
     .about-grid, .contact-wrapper { grid-template-columns: 1fr; gap: 50px; }
     
-    .hero { text-align: center; padding-top: 130px; }
+    .hero { text-align: center; padding-top: 120px; }
     .hero-title { font-size: 5rem; }
     .hero-desc { text-align: center; margin: 0 auto 40px auto; } 
     .hero-cta, .social-links { justify-content: center; }
@@ -511,18 +511,33 @@ h1, h2, h3 { font-family: var(--font-heading); font-weight: 500; line-height: 1.
     .section { padding: 100px 0; }
     .project-card { padding: 40px 20px; }
     
+    /* 🔻 SCALED DOWN ICONS FOR MOBILE 🔻 */
+    .glass-icon { width: 42px; height: 42px; font-size: 1.1rem; } /* Social icons smaller */
+    .skill-head i { font-size: 2rem; } /* Skill icons smaller */
+    .contact-details i { font-size: 1.3rem; } /* Contact icons smaller */
+    .contact-details a { font-size: 1rem; } 
+    
     .tools-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
-    .tool-card { padding: 30px 15px; } 
-    .tool-card i { font-size: 2.5rem; margin-bottom: 12px; } 
-    .tool-card h3 { font-size: 1.2rem; margin-bottom: 5px; } 
-    .tool-card span { font-size: 0.8rem; } 
+    .tool-card { padding: 25px 15px; } 
+    .tool-card i { font-size: 2rem; margin-bottom: 10px; } /* Tool icons smaller */
+    .tool-card h3 { font-size: 1.1rem; margin-bottom: 5px; } 
+    .tool-card span { font-size: 0.75rem; } 
 
     .footer-content { flex-direction: column; gap: 15px; text-align: center; }
     
     .badge-1 { top: 15px; left: 10px; }
     .badge-2 { bottom: 15px; right: 10px; }
 
-    .glass { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    /* 🚀 HEAVY ANTI-LAG OPTIMIZATION FOR PHONES 🚀 */
+    .glass { 
+        backdrop-filter: blur(8px) !important; /* Lower blur prevents scroll stuttering */
+        -webkit-backdrop-filter: blur(8px) !important; 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.9); /* Simplified shadow rendering */
+        transform: translateZ(0); /* Forces GPU hardware acceleration */
+    }
+    
+    /* Disables heavy background glow animations on phones to save RAM */
+    .bg-gradient, .hero::before { animation: none !important; }
 }
 
 @media (max-width: 480px) {
@@ -531,11 +546,14 @@ h1, h2, h3 { font-family: var(--font-heading); font-weight: 500; line-height: 1.
     .hero-title { font-size: 3.5rem; }
     .hero-subtitle { font-size: 1.2rem; }
     
+    /* Even smaller icons for tiny screens */
+    .glass-icon { width: 38px; height: 38px; font-size: 1rem; }
+    
     .tools-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    .tool-card { padding: 25px 10px; } 
-    .tool-card i { font-size: 2.2rem; }
-    .tool-card h3 { font-size: 1.1rem; }
-    .tool-card span { font-size: 0.75rem; }
+    .tool-card { padding: 20px 10px; } 
+    .tool-card i { font-size: 1.8rem; }
+    .tool-card h3 { font-size: 1rem; }
+    .tool-card span { font-size: 0.7rem; }
     
     .badge-1 { top: 10px; left: 5px; font-size: 0.75rem; padding: 8px 12px;}
     .badge-2 { bottom: 10px; right: 5px; font-size: 0.75rem; padding: 8px 12px;}
