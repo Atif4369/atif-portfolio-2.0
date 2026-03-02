@@ -222,18 +222,26 @@ h1, h2, h3 { font-family: var(--font-heading); font-weight: 500; line-height: 1.
    SCROLL DOWN INDICATOR
 ========================================= */
 .scroll-indicator { 
-    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); 
-    display: flex; flex-direction: column; align-items: center; gap: 8px; 
-    text-decoration: none; z-index: 10; opacity: 0; 
+    position: absolute; 
+    bottom: 40px; 
+    left: 0; 
+    width: 100%; /* Guarantees it spans the full screen to center perfectly */
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+    gap: 8px; 
+    text-decoration: none; 
+    z-index: 10; 
+    opacity: 0; 
     animation: fadeUpName 1s ease-out forwards 1.8s; 
 }
 
-/* ADDED: mouseBodyFloat animation to make the outer shell bob up and down */
 .mouse { 
     width: 24px; height: 38px; border: 2px solid var(--text-muted); 
     border-radius: 20px; display: flex; justify-content: center; 
     padding-top: 6px; transition: border-color var(--transition-smooth); 
-    animation: mouseBodyFloat 2.5s ease-in-out infinite; /* New smooth hover */
+    animation: mouseBodyFloat 2.5s ease-in-out infinite; 
 }
 
 .wheel { 
@@ -251,18 +259,8 @@ h1, h2, h3 { font-family: var(--font-heading); font-weight: 500; line-height: 1.
 .scroll-indicator:hover .wheel { background-color: var(--accent); }
 .scroll-indicator:hover .scroll-text { color: var(--accent); text-shadow: 0 0 10px rgba(255,255,255,0.4); }
 
-/* Inner Wheel dropping animation */
-@keyframes mouseScroll { 
-    0% { transform: translateY(0); opacity: 1; } 
-    100% { transform: translateY(14px); opacity: 0; } 
-}
-
-/* NEW: Outer Mouse Body floating animation */
-@keyframes mouseBodyFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(6px); } /* Gently floats down and back up */
-}
-
+@keyframes mouseScroll { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(14px); opacity: 0; } }
+@keyframes mouseBodyFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
 /* =========================================
    CARDS COMMON HOVER GLOW
 ========================================= */
@@ -393,12 +391,12 @@ h1, h2, h3 { font-family: var(--font-heading); font-weight: 500; line-height: 1.
     }
     
     /* 🚀 OVERLAP FIX: Mouse placed safely below social links */
-    .scroll-indicator {
-        position: relative;
+     .scroll-indicator {
+        position: relative; /* Removes absolute positioning */
         bottom: auto;
         left: auto;
-        transform: none;
-        margin-top: 50px; 
+        width: 100%;
+        margin-top: 40px; /* Adds space between social icons and the mouse */
     }
     
     .hero-title { font-size: 5rem; }
