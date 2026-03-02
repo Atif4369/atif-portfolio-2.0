@@ -55,6 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const bar = entry.target.querySelector('.progress-bar');
                     if (bar) bar.style.width = bar.getAttribute('data-width');
                 }
+                // Stop observing once animated to save CPU power
                 observer.unobserve(entry.target);
             }
         });
@@ -66,37 +67,47 @@ document.addEventListener("DOMContentLoaded", () => {
     revealElements.forEach(el => revealObserver.observe(el));
 
     // ==========================================
-    // 4. Scroll Spy (Auto-marking Navbar Links)
+    // 4. Scroll Spy (Optimized Anti-Lag Version)
     // ==========================================
     const sections = document.querySelectorAll('.section');
     const navItemsDesktop = document.querySelectorAll('.nav-item');
     const navItemsMobile = document.querySelectorAll('.mobile-nav-item');
+    
+    let isScrolling = false;
 
     window.addEventListener('scroll', () => {
-        let currentSectionId = '';
-        
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            const sectionHeight = section.clientHeight;
-            if (pageYOffset >= (sectionTop - sectionHeight / 3)) {
-                currentSectionId = section.getAttribute('id');
-            }
-        });
+        if (!isScrolling) {
+            window.requestAnimationFrame(() => {
+                let currentSectionId = '';
+                const scrollY = window.scrollY;
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (scrollY >= (sectionTop - sectionHeight / 3)) {
+                        currentSectionId = section.getAttribute('id');
+                    }
+                });
 
-        navItemsDesktop.forEach(link => {
-            link.classList.remove('active');
-            if (link.getAttribute('href') === `#${currentSectionId}`) {
-                link.classList.add('active');
-            }
-        });
+                navItemsDesktop.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${currentSectionId}`) {
+                        link.classList.add('active');
+                    }
+                });
 
-        navItemsMobile.forEach(link => {
-            link.classList.remove('active');
-            if (link.getAttribute('href') === `#${currentSectionId}`) {
-                link.classList.add('active');
-            }
-        });
-    });
+                navItemsMobile.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${currentSectionId}`) {
+                        link.classList.add('active');
+                    }
+                });
+
+                isScrolling = false;
+            });
+            isScrolling = true;
+        }
+    }, { passive: true }); // { passive: true } drastically reduces mobile scroll lag
 
     // ==========================================
     // 5. Tools Click Logic
